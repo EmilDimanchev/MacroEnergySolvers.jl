@@ -48,18 +48,14 @@ end
 
 function process_planning_sol(m::Model,planning_variables::Vector{String})
 
-    capacity_variables = values(m[:eAvailableCapacity])
+    # capacity_variables = values(m[:eAvailableCapacity])
+    all_planning_variables = all_variables(m)
 
-    if any(value(vcap) < -1e-8 for vcap in capacity_variables)
-        @info "Found negative capacity values, setting them to zero."
+    if any(value(vcap) < -1e-8 for vcap in all_planning_variables)
+        @info "Found negative planning values, setting them to zero."
         planning_variables_values = Dict();
-        all_planning_variables = all_variables(m)
         for v in all_planning_variables
-            if in(v,capacity_variables)
-                planning_variables_values[v] = round_small_values(value(v))
-            else
-                planning_variables_values[v] = value(v)
-            end
+            planning_variables_values[v] = round_small_values(value(v))
         end
         fixed_cost = value(x->planning_variables_values[x], m[:eFixedCost])
         planning_variables_values = Dict([s => planning_variables_values[variable_by_name(m,s)] for s in planning_variables])

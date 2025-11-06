@@ -161,9 +161,12 @@ function benders(planning_problem::Model,subproblems::Union{Vector{Dict{Any, Any
 			if integer_routine_flag
 				@info("*** Switching on integer constraints *** ")
 				UB = Inf;
-				set_integer.(integer_variables)
-				set_binary.(binary_variables)
-				planning_sol, LB = solve_planning_problem(planning_problem,planning_variables);
+				t = @elapsed set_integer.(integer_variables)
+				println("Setting integer variables took $(tidy_timing(t)) seconds")
+				t = @elapsed set_binary.(binary_variables)
+				println("Setting binary variables took $(tidy_timing(t)) seconds")
+				t = @elapsed planning_sol, LB = solve_planning_problem(planning_problem,planning_variables);
+				println("Solving the planning problem with integer variables took $(tidy_timing(t)) seconds")
 				planning_sol_best = deepcopy(planning_sol);
 				integer_routine_flag = false;
 			else
