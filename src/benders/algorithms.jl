@@ -226,7 +226,14 @@ function update_planning_problem_multi_cuts!(m::Model,subop_sol::Dict,planning_s
     
 	W = keys(subop_sol);
 	
-    @constraint(m,[w in W],subop_sol[w].theta_coeff*m[:vTHETA][w] >= subop_sol[w].op_cost + sum(subop_sol[w].lambda[i]*(variable_by_name(m,linking_variables_sub[w][i]) - planning_sol.values[linking_variables_sub[w][i]]) for i in 1:length(linking_variables_sub[w])));
+	lambdas_rounded = []
+	for w in W
+		push!(lambdas_rounded, round_lambdas(subop_sol[w].lambda))
+	end
+
+    # @constraint(m,[w in W],subop_sol[w].theta_coeff*m[:vTHETA][w] >= subop_sol[w].op_cost + sum(subop_sol[w].lambda[i]*(variable_by_name(m,linking_variables_sub[w][i]) - planning_sol.values[linking_variables_sub[w][i]]) for i in 1:length(linking_variables_sub[w])));
+
+	@constraint(m,[w in W],subop_sol[w].theta_coeff*m[:vTHETA][w] >= subop_sol[w].op_cost + sum(lambdas_rounded[w][i]*(variable_by_name(m,linking_variables_sub[w][i]) - planning_sol.values[linking_variables_sub[w][i]]) for i in 1:length(linking_variables_sub[w])));
 
 end
 
@@ -261,4 +268,8 @@ function compute_upper_bound(m::Model,planning_sol::NamedTuple,subop_sol::Dict)
 	UB = planning_sol.fixed_cost + value(x -> point[x], m[:eApproximateVariableCost])
 
 	return UB
+end
+
+function round_lambdas(lambdas::Vector{Float64}; tol=1e-8)
+	return [abs(x) < tol ? 0.0 : x for x in lambdas]
 end
