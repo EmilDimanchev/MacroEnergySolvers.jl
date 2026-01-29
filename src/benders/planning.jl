@@ -29,6 +29,8 @@ function solve_planning_problem(m::Model,planning_variables::Vector{String})
         planning_sol = process_planning_sol(m,planning_variables)
         LB = objective_value(m)
     else
+        @info("Termination status of the planning problem: $(termination_status(m))")
+        flush(stdout)
         compute_conflict!(m)
         list_of_conflicting_constraints = ConstraintRef[];
         for (F, S) in list_of_constraint_types(m)
