@@ -156,7 +156,7 @@ function benders(planning_problem::Model,subproblems::Union{Vector{Dict{Any, Any
 		else
 			@info("$info_string")
 		end
-
+		flush(stdout)
         if running_gap <= ConvTol
 			if integer_routine_flag
 				@info("*** Switching on integer constraints *** ")
