@@ -20,9 +20,12 @@ If negative capacities are detected, the solver will be reconfigured with `Cross
 and the problem will be re-solved. If the solution fails, the function will compute
 and display conflicting constraints (if the solver supports it) before throwing an error.
 """
-function solve_planning_problem(m::Model,planning_variables::Vector{String})
+function solve_planning_problem(m::Model,planning_variables::Vector{String}; solver_options=Dict())
 	
-	
+    # Apply solver options from the Dict (do nothing if empty).
+    for (param, val) in solver_options
+        set_optimizer_attribute(m, param, val)
+    end
     optimize!(m)
 
     if has_values(m)

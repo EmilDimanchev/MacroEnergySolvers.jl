@@ -165,7 +165,8 @@ function benders(planning_problem::Model,subproblems::Union{Vector{Dict{Any, Any
 				println("Setting integer variables took $(tidy_timing(t)) seconds")
 				t = @elapsed set_binary.(binary_variables)
 				println("Setting binary variables took $(tidy_timing(t)) seconds")
-				t = @elapsed planning_sol, LB = solve_planning_problem(planning_problem,planning_variables);
+				solver_options = Dict("Method"=>-1)
+				t = @elapsed planning_sol, LB = solve_planning_problem(planning_problem,planning_variables; solver_options=solver_options);
 				println("Solving the planning problem with integer variables took $(tidy_timing(t)) seconds")
 				planning_sol_best = deepcopy(planning_sol);
 				integer_routine_flag = false;
