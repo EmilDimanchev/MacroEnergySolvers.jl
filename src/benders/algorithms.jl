@@ -62,6 +62,8 @@ function benders(planning_problem::Model,subproblems::Union{Vector{Dict{Any, Any
 		add_slacks_to_subproblems!(subproblems);
 	end
 
+	add_approximate_variable_cost!(planning_problem,length(linking_variables_sub));
+
 	## Start solver time
 	solver_start_time = time()
     
