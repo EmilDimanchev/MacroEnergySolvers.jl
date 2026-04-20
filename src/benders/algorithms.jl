@@ -163,20 +163,24 @@ function benders(planning_problem::Model,subproblems::Union{Vector{Dict{Any, Any
 		end
 
         if running_gap <= ConvTol
-			if integer_routine_flag
-				@info("*** Switching on integer constraints *** ")
-				UB = Inf;
-				t = @elapsed set_integer.(integer_variables)
-				println("Setting integer variables took $(tidy_timing(t)) seconds")
-				t = @elapsed set_binary.(binary_variables)
-				println("Setting binary variables took $(tidy_timing(t)) seconds")
-				t = @elapsed planning_sol, LB = solve_planning_problem(planning_problem,planning_variables);
-				println("Solving the planning problem with integer variables took $(tidy_timing(t)) seconds")
-				planning_sol_best = deepcopy(planning_sol);
-				integer_routine_flag = false;
-			else
+			if running_gap < 0
+				@info("*** Warning: Negative gap detected, terminating (Gap= $(round_from_tol(running_gap, ConvTol, 2)))  ***")
+				term_status = "NEGATIVE GAP"
 				break
-			
+			else
+				if integer_routine_flag
+					@info("*** Switching on integer constraints *** ")
+					UB = Inf;
+					set_integer.(integer_variables)
+					set_binary.(binary_variables)
+					planning_sol, LB = solve_planning_problem(planning_problem,planning_variables);
+					planning_sol_best = deepcopy(planning_sol);
+					integer_routine_flag = false;
+				else
+					@info("*** Terminating because optimal solution found (Gap= $(round_from_tol(running_gap, ConvTol, 2)))  ***")
+					term_status = "OPTIMAL"
+					break
+				end
 			end
 		elseif (cpu_time[end] >= MaxCpuTime)
 			@info("*** Terminating because CPU time limit reached (MaxCpuTime=$MaxCpuTime)  ***")
