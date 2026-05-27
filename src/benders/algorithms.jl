@@ -161,7 +161,7 @@ function benders(planning_problem::Model,subproblems::Union{Vector{Dict{Any, Any
 		else
 			@info("$info_string")
 		end
-
+		flush(stdout)
         if running_gap <= ConvTol
 			if running_gap < 0
 				@info("*** Warning: Negative gap detected, terminating (Gap= $(round_from_tol(running_gap, ConvTol, 2)))  ***")
