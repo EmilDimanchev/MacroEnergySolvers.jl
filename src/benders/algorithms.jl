@@ -162,7 +162,6 @@ function benders(planning_problem::Model,subproblems::Union{Vector{Dict{Any, Any
 			@info("$info_string")
 		end
 		flush(stdout)
-		flush(stderr)
 
         if running_gap <= ConvTol
 			if running_gap < 0
