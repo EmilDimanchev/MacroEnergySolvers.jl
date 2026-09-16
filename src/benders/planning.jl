@@ -80,7 +80,7 @@ function process_planning_sol(m::Model,planning_variables::Vector{String})
     # capacity_variables = values(m[:eAvailableCapacity])
     all_planning_variables = all_variables(m)
 
-    if any(value(vcap) < -1e-8 for vcap in all_planning_variables)
+    if any(value(vcap) < -1e-11 for vcap in all_planning_variables)
         @info "Found negative planning values, setting them to zero."
         planning_variables_values = Dict();
         for v in all_planning_variables
@@ -100,7 +100,7 @@ function process_planning_sol(m::Model,planning_variables::Vector{String})
 end
 
 function round_small_values(z::Float64)
-    if z < -1e-8
+    if z < -1e-11
         return 0.0
     else
         return z
